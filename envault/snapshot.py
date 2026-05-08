@@ -66,3 +66,20 @@ def format_snapshot_result(result: SnapshotResult) -> str:
     else:
         lines.append("No changes since that snapshot.")
     return "\n".join(lines)
+
+
+def list_snapshots(base_dir: str, project: str) -> list[dict]:
+    """Return a summary list of available snapshots for *project*.
+
+    Each item contains ``index``, ``timestamp``, and ``secret_count`` keys.
+    Returns an empty list when no history exists.
+    """
+    history = read_history(base_dir, project)
+    return [
+        {
+            "index": i,
+            "timestamp": entry.get("timestamp", "unknown"),
+            "secret_count": len(entry.get("secrets", {})),
+        }
+        for i, entry in enumerate(history)
+    ]
