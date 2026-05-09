@@ -31,6 +31,19 @@ def search_secrets(
     """Return secrets matching *pattern* (glob) and/or *tag*.
 
     At least one of *pattern* or *tag* must be supplied.
+
+    Args:
+        base_dir: Root directory where project vaults are stored.
+        project: Name of the project whose secrets to search.
+        passphrase: Decryption passphrase for the vault.
+        pattern: Optional glob pattern matched against secret keys (e.g. ``"DB_*"``).
+        tag: Optional tag name; only secrets carrying this tag are returned.
+
+    Returns:
+        A list of :class:`SearchResult` objects sorted alphabetically by key.
+
+    Raises:
+        SearchError: If neither *pattern* nor *tag* is provided.
     """
     if pattern is None and tag is None:
         raise SearchError("Provide at least one of: pattern, tag")
@@ -54,7 +67,17 @@ def search_secrets(
 
 
 def format_results(results: List[SearchResult], *, show_values: bool = False) -> str:
-    """Return a human-readable table of search results."""
+    """Return a human-readable table of search results.
+
+    Args:
+        results: The list of :class:`SearchResult` objects to format.
+        show_values: When ``True``, include the secret value in the output.
+            Defaults to ``False`` to avoid accidental exposure.
+
+    Returns:
+        A newline-separated string of formatted result lines, or a message
+        indicating that no matching secrets were found.
+    """
     if not results:
         return "No matching secrets found."
 
